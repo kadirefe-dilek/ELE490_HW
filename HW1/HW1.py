@@ -4,7 +4,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 ## Import necessary libraries
-import cv2 as cv
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,9 +11,18 @@ import matplotlib.pyplot as plt
 
 ## Definitions and reading the image
 # Define path and name to read the image
-imageRootPath = "images"
-# imageName = "myselfie.jpg"
-imageName = "rgbPalette.png"
+imageRootPath = 'images'
+
+operation = 'assignment'
+# operation = 'test'
+
+imageName = ''
+outputImagePrefix = ''
+if operation == 'assignment':
+    imageName = 'myselfie.jpg'
+elif operation == 'test':
+    imageName = 'test_rgbPalette.jpg'
+    outputImagePrefix = 'test_'
 fileSep = "\\"
 
 imagePath = str(imageRootPath + fileSep + imageName)
@@ -29,30 +37,35 @@ imageIn = imageIn.convert('RGB')
 imgArray = np.array(imageIn, dtype=np.uint8)
 
 # Obtain single-channel arrays
-imgArray_red = imgArray[:,:,0]
-imgArray_green = imgArray[:,:,1]
-imgArray_blue = imgArray[:,:,2]
+imgArray_red = np.copy(imgArray[:,:,0])
+imgArray_green = np.copy(imgArray[:,:,1])
+imgArray_blue = np.copy(imgArray[:,:,2])
 
 # Create grayscale images from each color channel
 img_red = Image.fromarray(imgArray_red, mode='L') # create grayscale image
 # convert grayscale image to type 'F' (float32)
-imgArray32_red = imageIn.convert('F') 
+imgArray32_red = img_red.convert('F') 
 # assign grayscale image to a numpy array 
 imgArray32_red = np.array(imgArray32_red, dtype=np.float32) 
 
 img_green = Image.fromarray(imgArray_green, mode='L') 
-imgArray32_green = imageIn.convert('F') 
+imgArray32_green = img_green.convert('F') 
 imgArray32_green = np.array(imgArray32_green, dtype=np.float32) 
 
 img_blue = Image.fromarray(imgArray_blue, mode='L') 
-imgArray32_blue = imageIn.convert('F') 
+imgArray32_blue = img_blue.convert('F') 
 imgArray32_blue = np.array(imgArray32_blue, dtype=np.float32) 
 
-# Get the dimensions of image (2320x2320)
+# Get the dimensions of image 
 imageHeight = imgArray.shape[0]
 imageWidth  = imgArray.shape[1]
-print(f"Image dimensions: {imageHeight}x{imageWidth}")
+# print(f"Image dimensions: {imageHeight}x{imageWidth}")
 
+# A 3D numpy array from float32 data type can be created
+imgArray32 = np.zeros((imageHeight, imageWidth, 3), dtype=np.float32)
+imgArray32[:,:,0] = np.copy(imgArray32_red)
+imgArray32[:,:,1] = np.copy(imgArray32_green)
+imgArray32[:,:,2] = np.copy(imgArray32_blue) 
 
 ## Q2 
 # Display the original image 
@@ -65,33 +78,33 @@ plt.show()
 plt.imshow(img_red, cmap='gray')
 plt.axis('off')
 plt.title('Red channel, displayed as grayscale.')
-plt.imsave(str(imageRootPath + fileSep + 'redCh_gray.png'), img_red)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'redCh_gray.jpg'), img_red, cmap='gray')
 plt.show()
 plt.imshow(img_green, cmap='gray')
 plt.axis('off')
 plt.title('Green channel, displayed as grayscale.')
-plt.imsave(str(imageRootPath + fileSep + 'GreenCh_gray.png'), img_green)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'greenCh_gray.jpg'), img_green, cmap='gray')
 plt.show()
 plt.imshow(img_blue, cmap='gray')
 plt.axis('off')
 plt.title('Blue channel, displayed as grayscale.')
-plt.imsave(str(imageRootPath + fileSep + 'BlueCh_gray.png'), img_blue)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'blueCh_gray.jpg'), img_blue, cmap='gray')
 plt.show()
 
 
 ## Q3
 # Define min threshold values for each channel
-redMinThVal = 128
-greenMinThVal = 128
-blueMinThVal = 128
+redMinThVal = 180
+greenMinThVal = 160
+blueMinThVal = 170
 # Create empty lists to store the index whose values are below the threshold
 redMinIndexesToChange = []
 greenMinIndexesToChange = []
 blueMinIndexesToChange = []
 # Create arrays which thresholding will be applied
-minThImgArr_red = imgArray_red
-minThImgArr_green = imgArray_green
-minThImgArr_blue = imgArray_blue
+minThImgArr_red = np.copy(imgArray_red)
+minThImgArr_green = np.copy(imgArray_green)
+minThImgArr_blue = np.copy(imgArray_blue)
 
 # Applying min-thresholding on R-channel
 # Extract the indexes whose values are below the threshold 
@@ -104,7 +117,7 @@ minThImg_red = Image.fromarray(minThImgArr_red, mode='L')
 plt.imshow(minThImg_red, cmap='gray')
 plt.axis('off')
 plt.title('Min-thresholded red channel with th='+str(redMinThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'minThRedCh_gray.png'), minThImg_red, cmap='gray')
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'minThRedCh_gray.jpg'), minThImg_red, cmap='gray')
 plt.show()
 
 # Applying min-thresholding on G-channel
@@ -117,7 +130,7 @@ minThImg_green = Image.fromarray(minThImgArr_green, mode='L')
 plt.imshow(minThImg_green, cmap='gray')
 plt.axis('off')
 plt.title('Min-thresholded green channel with th='+str(greenMinThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'minThGreenCh_gray.png'), minThImg_green)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'minThGreenCh_gray.jpg'), minThImg_green, cmap='gray')
 plt.show()
 
 # Applying min-thresholding on B-channel
@@ -130,23 +143,23 @@ minThImg_blue = Image.fromarray(minThImgArr_blue, mode='L')
 plt.imshow(minThImg_blue, cmap='gray')
 plt.axis('off')
 plt.title('Min-thresholded blue channel with th='+str(blueMinThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'minThBlueCh_gray.png'), minThImg_blue)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'minThBlueCh_gray.jpg'), minThImg_blue, cmap='gray')
 plt.show()
 
 
 ## Q4
 # Define max threshold values for each channel
-redMaxThVal = 128
-greenMaxThVal = 128
-blueMaxThVal = 128
+redMaxThVal = 200
+greenMaxThVal = 190
+blueMaxThVal = 220
 # Create empty lists to store the index whose values are below the threshold
 redMaxIndexesToChange = []
 greenMaxIndexesToChange = []
 blueMaxIndexesToChange = []
 # Create arrays which thresholding will be applied
-maxThImgArr_red = imgArray_red
-maxThImgArr_green = imgArray_green
-maxThImgArr_blue = imgArray_blue
+maxThImgArr_red = np.copy(imgArray_red)
+maxThImgArr_green = np.copy(imgArray_green)
+maxThImgArr_blue = np.copy(imgArray_blue)
 
 # Applying max-thresholding on R-channel
 # Extract the indexes whose values are below the threshold 
@@ -159,7 +172,7 @@ maxThImg_red = Image.fromarray(maxThImgArr_red, mode='L')
 plt.imshow(maxThImg_red, cmap='gray')
 plt.axis('off')
 plt.title('Max-thresholded red channel with th='+str(redMaxThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'maxThRedCh_gray.png'), maxThImg_red, cmap='gray')
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'maxThRedCh_gray.jpg'), maxThImg_red, cmap='gray')
 plt.show()
 
 # Applying max-thresholding on G-channel
@@ -172,7 +185,7 @@ maxThImg_green = Image.fromarray(maxThImgArr_green, mode='L')
 plt.imshow(maxThImg_green, cmap='gray')
 plt.axis('off')
 plt.title('Max-thresholded green channel with th='+str(greenMaxThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'maxThGreenCh_gray.png'), maxThImg_green)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'maxThGreenCh_gray.jpg'), maxThImg_green, cmap='gray')
 plt.show()
 
 # Applying max-thresholding on B-channel
@@ -185,6 +198,5 @@ maxThImg_blue = Image.fromarray(maxThImgArr_blue, mode='L')
 plt.imshow(maxThImg_blue, cmap='gray')
 plt.axis('off')
 plt.title('Max-thresholded blue channel with th='+str(blueMaxThVal)+', displayed as grayscale')
-plt.imsave(str(imageRootPath + fileSep + 'maxThBlueCh_gray.png'), maxThImg_blue)
+plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'maxThBlueCh_gray.jpg'), maxThImg_blue, cmap='gray')
 plt.show()
-

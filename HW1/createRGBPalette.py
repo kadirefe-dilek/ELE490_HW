@@ -5,7 +5,7 @@ import numpy as np
 
 # Define path and name to read the image
 imageRootPath = "images"
-imageName = "rgbPalette.png"
+imageName = "test_rgbPalette.jpg"
 separator = "\\"
 
 imagePath = str(imageRootPath + separator + imageName)
