@@ -8,10 +8,10 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 ## Definitions and reading the image
 # Define path and name to read the image
-imageRootPath = 'images'
+imageRootPath = 'C:\\Users\\User\\Desktop\\ELE490_HW\\HW1\\images'
+fileSep = "\\"
 
 operation = 'assignment'
 # operation = 'test'
@@ -19,11 +19,10 @@ operation = 'assignment'
 imageName = ''
 outputImagePrefix = ''
 if operation == 'assignment':
-    imageName = 'myselfie.jpg'
+    imageName = 'mySelfie.jpg'
 elif operation == 'test':
     imageName = 'test_rgbPalette.jpg'
     outputImagePrefix = 'test_'
-fileSep = "\\"
 
 imagePath = str(imageRootPath + fileSep + imageName)
 
@@ -91,7 +90,6 @@ plt.title('Blue channel, displayed as grayscale.')
 plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'blueCh_gray.jpg'), img_blue, cmap='gray')
 plt.show()
 
-
 ## Q3
 # Define min threshold values for each channel
 redMinThVal = 180
@@ -146,6 +144,19 @@ plt.title('Min-thresholded blue channel with th='+str(blueMinThVal)+', displayed
 plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'minThBlueCh_gray.jpg'), minThImg_blue, cmap='gray')
 plt.show()
 
+# Creating a colored image from thresholded images
+minThImgArray = np.zeros((imageHeight, imageWidth, 3), dtype=np.uint8)
+minThImgArray[:,:,0] = np.copy(minThImgArr_red)
+minThImgArray[:,:,1] = np.copy(minThImgArr_green)
+minThImgArray[:,:,2] = np.copy(minThImgArr_blue)
+minThImg =Image.fromarray(minThImgArray).convert('RGB')
+# display and save min-thresholded colored image
+plt.imshow(minThImg)
+plt.axis('off')
+plt.title('Colored Image Obtained From Min-Thresholded Color Channels')
+# plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'minTh_colored.jpg'), minThImg)
+minThImg.save(str(imageRootPath + fileSep + outputImagePrefix + 'minTh_colored.jpg') )
+plt.show()
 
 ## Q4
 # Define max threshold values for each channel
@@ -199,4 +210,18 @@ plt.imshow(maxThImg_blue, cmap='gray')
 plt.axis('off')
 plt.title('Max-thresholded blue channel with th='+str(blueMaxThVal)+', displayed as grayscale')
 plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'maxThBlueCh_gray.jpg'), maxThImg_blue, cmap='gray')
+plt.show()
+
+# Creating a colored image from thresholded images
+maxThImgArray = np.zeros((imageHeight, imageWidth, 3), dtype=np.uint8)
+maxThImgArray[:,:,0] = np.copy(maxThImgArr_red)
+maxThImgArray[:,:,1] = np.copy(maxThImgArr_green)
+maxThImgArray[:,:,2] = np.copy(maxThImgArr_blue)
+maxThImg =Image.fromarray(maxThImgArray).convert('RGB')
+# display and save min-thresholded colored image
+plt.imshow(maxThImg)
+plt.axis('off')
+plt.title('Colored Image Obtained From Max-Thresholded Color Channels')
+# plt.imsave(str(imageRootPath + fileSep + outputImagePrefix + 'maxTh_colored.jpg'), maxThImg)
+maxThImg.save(str(imageRootPath + fileSep + outputImagePrefix + 'maxTh_colored.jpg') )
 plt.show()
