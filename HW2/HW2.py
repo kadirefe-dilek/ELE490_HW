@@ -2,6 +2,7 @@
 # ELE490 - Fundamentals of Image Processing 
 # Assignment 2
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 ## Import necessary libraries
 from PIL import Image
 import numpy as np
@@ -25,7 +26,6 @@ def getImagePDF(src_image:np.ndarray):
     return np.array(imagePdf)
 
 
-
 '''
 Matches the histogram of the source image to the reference image's PDF (probability density function).
     in:
@@ -33,19 +33,15 @@ Matches the histogram of the source image to the reference image's PDF (probabil
         
         reference_pdf: The PDF of the reference image (1D numpy array).
     out: 
-        matched_image: Output image array with the histogram matched to the reference PDF.
+        matched_image: Output image array with the histogram matched to the reference PDF. (numpy array with the same shape and type as the src_image)
 '''
-def matchHistogram(src_image, reference_pdf):
+def matchHistogram(src_image, ref_hist):
     # Calculate the PDF of the source image
     src_hist = getImagePDF(src_image)
 
-    # Calculate the CDF of the source and reference images
+    # Calculate the CDF of the source and reference images (CDF is normalized since getImagePDF() returns normalized PDF)
     src_cdf = np.cumsum(src_hist)
-    ref_cdf = np.cumsum(reference_pdf)
-
-    # Normalize the CDFs (both source and reference)
-    src_cdf = src_cdf / src_cdf[-1]  # Normalized cumulative distribution for the source
-    ref_cdf = ref_cdf / ref_cdf[-1]  # Normalized cumulative distribution for the reference
+    ref_cdf = np.cumsum(ref_hist)
 
     # Create a lookup table to map source pixels to reference pixels
     lookup_table = np.zeros(256)
@@ -56,8 +52,8 @@ def matchHistogram(src_image, reference_pdf):
         closest_ref_value = np.argmin(np.abs(ref_cdf - src_cdf[src_value]))
         lookup_table[src_value] = closest_ref_value
 
-    # Apply the lookup table to the source image
-    matched_image = lookup_table[src_image.flatten().astype(np.uint8)]
+    # Apply the lookup table to the source image (create matched image from lookup_table indexed by corresponding pixel values)
+    matched_image = np.array(lookup_table[src_image.flatten().astype(np.uint8)])
 
     # Reshape the output image to the original source image shape
     matched_image = matched_image.reshape(src_image.shape)
@@ -75,6 +71,7 @@ imageRootPath = imageRootPath + fileSep + 'images'
 imagePathLisa = str(imageRootPath + fileSep + 'ELE490_lisa.tif')
 imagePathCameraman = str(imageRootPath + fileSep + 'ELE490_Cameraman.tif')
 
+## Q1 read the images
 # Open the image: Lisa
 imageLisa = Image.open(imagePathLisa)
 # Convert image to grayscale if it's not already in that mode
