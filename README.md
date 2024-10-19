@@ -1,2 +1,2 @@
 # ELE490_HW
-HUEEE ELE490 Class Assignments (Home works)   
+Hacettepe University Department of Electrical and Electronics Engineering, ELE490 - Fundamentals of Image Processing Course Assignments 
