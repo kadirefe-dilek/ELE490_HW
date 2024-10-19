@@ -20,6 +20,7 @@ imageName = ''
 outputImagePrefix = ''
 if operation == 'assignment':
     imageName = 'mySelfie.jpg'
+    outputImagePrefix = 'selfie_'
 elif operation == 'test':
     imageName = 'test_rgbPalette.jpg'
     outputImagePrefix = 'test_'
