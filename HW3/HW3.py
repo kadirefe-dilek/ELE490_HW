@@ -41,6 +41,25 @@ def filterImage(arrayF32_imageToFilter, filter):
     # Return new image both as Image object and float32 np array
     return image_filtered, arrayF32_imageFiltered
 
+
+'''
+Performs median filtering using medfilt2d method present in scipy.signal
+    in:
+        imageToFilter:
+
+        filterSize: Integer number which defines the size of the square shaped kernel that is used in median filtering 
+    out:
+        filteredImage:
+
+'''
+def applyMedianFilter(arrayU8_imageToFilter:np.array, filterSize:int=3):
+    arrayU8_filteredImage = np.asarray(signal.medfilt2d(arrayU8_imageToFilter, 
+                                    kernel_size=filterSize), dtype=np.uint8)
+
+    filteredImage = Image.fromarray(arrayU8_filteredImage, mode='L')
+    return filteredImage
+
+
 ## Definitions and reading the image
 # Define path and name to read the image
 fileSep = "\\"
@@ -75,14 +94,14 @@ arrayF32_noisyCameraman = np.asarray(arrayU8_noisyCameraman, dtype=np.float32)
 plt.imshow(image_Cameraman, cmap='gray')
 plt.axis('off')
 plt.title('Original image: Cameraman.')
-plt.imsave(str(imageRootPath + fileSep + 'imageCameraman.jpg'), image_Cameraman, cmap='gray')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman.jpg'), image_Cameraman, cmap='gray')
 plt.show()
 
 # Display the original image: noisyCameraman
 plt.imshow(image_noisyCameraman, cmap='gray')
 plt.axis('off')
 plt.title('Original image: noisyCameraman.')
-plt.imsave(str(imageRootPath + fileSep + 'imagenoisyCameraman.jpg'), image_noisyCameraman, cmap='gray')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman.jpg'), image_noisyCameraman, cmap='gray')
 plt.show()
 
 
@@ -149,7 +168,129 @@ plt.title('Filtered image: noisyCameraman filtered by h_5.')
 plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredH5.jpg'), image_noisyCameraman, cmap='gray')
 plt.show()
 
+
 ## Q4 - Apply Median filtering
+# Filter image: apply median filtering to image Cameraman
+image_Cameraman_filteredMed3 = applyMedianFilter(arrayU8_Cameraman, 3)
+image_Cameraman_filteredMed5 = applyMedianFilter(arrayU8_Cameraman, 5)
+
+# Display filtered images: Cameraman images
+plt.imshow(image_Cameraman_filteredMed3, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by 3x3 median filter.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredMed3.jpg'), image_Cameraman_filteredMed3, cmap='gray')
+plt.show()
+
+plt.imshow(image_Cameraman_filteredMed5, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by 5x5 median filter.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredMed5.jpg'), image_Cameraman_filteredMed5, cmap='gray')
+plt.show()
+
+# Filter image: apply median filtering to image noisyCameraman
+image_noisyCameraman_filteredMed3 = applyMedianFilter(arrayU8_noisyCameraman, 3)
+image_noisyCameraman_filteredMed5 = applyMedianFilter(arrayU8_noisyCameraman, 5)
+
+# Display filtered images: noisyCameraman images
+plt.imshow(image_noisyCameraman_filteredMed3, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by 3x3 median filter.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredMed3.jpg'), image_noisyCameraman_filteredMed3, cmap='gray')
+plt.show()
+
+plt.imshow(image_noisyCameraman_filteredMed5, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by 5x5 median filter.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredMed5.jpg'), image_noisyCameraman_filteredMed5, cmap='gray')
+plt.show()
 
 
 ## Q5 - Apply some filters
+# Laplacian filter
+filter_L4 = np.array([[0,  1, 0],
+                      [1, -4, 1],
+                      [0,  1, 0]], dtype=np.float32) 
+
+filter_L8 = np.array([[0,  1, 0],
+                      [1, -8, 1],
+                      [0,  1, 0]], dtype=np.float32)
+# Sabel operator (for vertical edge detection)
+filter_Sv = np.array([[-1, -2, -1],
+                      [ 0,  0,  0],
+                      [ 1,  2,  1]], dtype=np.float32) 
+# Sabel operator (for horizontal edge detection)
+filter_Sh = np.array([[-1, 0, 1],
+                      [-2, 0, 2],
+                      [-1, 0, 1]], dtype=np.float32)
+
+# Filter image: filter the image Cameraman by L4, L8, Sv, and Sh 
+image_Cameraman_filteredL4, arrayF32_Cameraman_filteredL4 = filterImage(
+    arrayF32_Cameraman, filter_L4)
+
+image_Cameraman_filteredL8, arrayF32_Cameraman_filteredL8 = filterImage(
+    arrayF32_Cameraman, filter_L8)
+
+image_Cameraman_filteredSv, arrayF32_Cameraman_filteredSv = filterImage(
+    arrayF32_Cameraman, filter_Sv)
+
+image_Cameraman_filteredSh, arrayF32_Cameraman_filteredSh = filterImage(
+    arrayF32_Cameraman, filter_Sh)
+
+# Display filtered images: filtered Cameraman images
+plt.imshow(image_Cameraman_filteredL4, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by L_4.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredL4.jpg'), image_Cameraman_filteredL4, cmap='gray')
+plt.show()
+
+plt.imshow(image_Cameraman_filteredL8, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by L_8.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredL4.jpg'), image_Cameraman_filteredL8, cmap='gray')
+plt.show()
+
+plt.imshow(image_Cameraman_filteredSv, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by S_v.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredSv.jpg'), image_Cameraman_filteredSv, cmap='gray')
+plt.show()
+
+plt.imshow(image_Cameraman_filteredSh, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: Cameraman filtered by S_h.')
+plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filtereSh.jpg'), image_Cameraman_filteredSh, cmap='gray')
+plt.show()
+
+# Filter image: filter the image noisyCameraman by L4, L8, Sv, and Sh 
+image_noisyCameraman_filteredL4, arrayF32_noisyCameraman_filteredL4 = filterImage(arrayF32_noisyCameraman, filter_L4)
+
+image_noisyCameraman_filteredL8, arrayF32_noisyCameraman_filteredL8 = filterImage(arrayF32_noisyCameraman, filter_L8)
+
+image_noisyCameraman_filteredSv, arrayF32_noisyCameraman_filteredSv = filterImage(arrayF32_noisyCameraman, filter_Sv)
+
+image_noisyCameraman_filteredSh, arrayF32_noisyCameraman_filteredSh = filterImage(arrayF32_noisyCameraman, filter_Sh)
+
+# Display filtered images: filtered noisyCameraman images
+plt.imshow(image_noisyCameraman_filteredL4, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by L_4.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredL4.jpg'), image_noisyCameraman_filteredL4, cmap='gray')
+plt.show()
+
+plt.imshow(image_noisyCameraman_filteredL8, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by L_8.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredL4.jpg'), image_noisyCameraman_filteredL8, cmap='gray')
+plt.show()
+
+plt.imshow(image_noisyCameraman_filteredSv, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by S_v.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredSv.jpg'), image_noisyCameraman_filteredSv, cmap='gray')
+plt.show()
+
+plt.imshow(image_noisyCameraman_filteredSh, cmap='gray')
+plt.axis('off')
+plt.title('Filtered image: noisyCameraman filtered by S_h.')
+plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filtereSh.jpg'), image_noisyCameraman_filteredSh, cmap='gray')
+plt.show()
