@@ -12,6 +12,34 @@ from scipy import signal
 from os import getcwd as gcd
 
 
+'''
+Performs filtering by using convolution method present in scipy.signal
+    in: 
+        arrayF32_imageToFilter: The input image that the filtering operation is to be performed on. Expected type is a 2D array and the argument is used as np.array of type float32
+    
+        filter: The filter that is to be used for the filtering operation. Expected type is a 2D array and the argument is used as np.array of type float32
+    out:
+        image_filtered: Image object that includes the filtered image.
+
+        arrayF32_imageFiltered: Numpy array of type float32 that carries the pixel values of the filtered image. 
+'''
+def filterImage(arrayF32_imageToFilter, filter):
+    # Convert input arrays to np arrays of type float32
+    arrayF32_imageToFilter = np.asarray(arrayF32_imageToFilter, 
+                                        dtype=np.float32)
+    filter = np.asarray(filter, dtype=np.float32)
+    # Perform convolution 
+    arrayF32_imageFiltered = signal.convolve2d(
+                            arrayF32_imageToFilter, filter, # arg1 * arg2
+                            mode='full', # perform full 2D discrete convolution
+                            boundary='fill', fillvalue=0 # pad by 0 
+                            ) 
+    # Create an array of type uint8 to create the image from
+    arrayU8_imageFiltered = np.asarray(arrayF32_imageFiltered, dtype=np.uint8)
+    # Create an Image object from filtered image
+    image_filtered = Image.fromarray(arrayU8_imageFiltered).convert('L')
+    # Return new image both as Image object and float32 np array
+    return image_filtered, arrayF32_imageFiltered
 
 ## Definitions and reading the image
 # Define path and name to read the image
@@ -67,26 +95,14 @@ filter_H4 = np.ones((4,4), dtype=np.float32) * (1/16)
 filter_H5 = np.ones((5,5), dtype=np.float32) * (1/25)
 
 # Filter image: filter the image Cameraman
-arrayF32_Cameraman_filteredH3 = signal.convolve2d(arrayF32_Cameraman, 
-                                                  filter_H3, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_Cameraman_filteredH3 = np.asarray(arrayF32_Cameraman_filteredH3, dtype=np.uint8)
-image_Cameraman_filteredH3 = Image.fromarray(arrayU8_Cameraman_filteredH3).convert('L')
+image_Cameraman_filteredH3, arrayF32_Cameraman_filteredH3 = filterImage(
+                                                            arrayF32_Cameraman, filter_H3)
 
-arrayF32_Cameraman_filteredH4 = signal.convolve2d(arrayF32_Cameraman, 
-                                                  filter_H4, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_Cameraman_filteredH4 = np.asarray(arrayF32_Cameraman_filteredH4, dtype=np.uint8)
-image_Cameraman_filteredH4 = Image.fromarray(arrayU8_Cameraman_filteredH4).convert('L')
+image_Cameraman_filteredH4, arrayF32_Cameraman_filteredH4 = filterImage(
+                                                            arrayF32_Cameraman, filter_H4)
 
-arrayF32_Cameraman_filteredH5 = signal.convolve2d(arrayF32_Cameraman, 
-                                                  filter_H5, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_Cameraman_filteredH5 = np.asarray(arrayF32_Cameraman_filteredH5, dtype=np.uint8)
-image_Cameraman_filteredH5 = Image.fromarray(arrayU8_Cameraman_filteredH5).convert('L')
+image_Cameraman_filteredH5, arrayF32_Cameraman_filteredH5 = filterImage(
+                                                            arrayF32_Cameraman, filter_H5)
 
 # Display filtered images: cameraman images
 plt.imshow(image_Cameraman_filteredH3, cmap='gray')
@@ -108,26 +124,11 @@ plt.imsave(str(imageRootPath + fileSep + 'image_Cameraman_filteredH5.jpg'), imag
 plt.show()
 
 # Filter image: filter the image noisyCameraman
-arrayF32_noisyCameraman_filteredH3 = signal.convolve2d(arrayF32_noisyCameraman, 
-                                                  filter_H3, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_noisyCameraman_filteredH3 = np.asarray(arrayF32_noisyCameraman_filteredH3, dtype=np.uint8)
-image_noisyCameraman_filteredH3 = Image.fromarray(arrayU8_noisyCameraman_filteredH3).convert('L')
+image_noisyCameraman_filteredH3, arrayF32_noisyCameraman_filteredH3 =  filterImage(arrayF32_noisyCameraman, filter_H3)
 
-arrayF32_noisyCameraman_filteredH4 = signal.convolve2d(arrayF32_noisyCameraman, 
-                                                  filter_H4, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_noisyCameraman_filteredH4 = np.asarray(arrayF32_noisyCameraman_filteredH4, dtype=np.uint8)
-image_noisyCameraman_filteredH4 = Image.fromarray(arrayU8_noisyCameraman_filteredH4).convert('L')
+image_noisyCameraman_filteredH4, arrayF32_noisyCameraman_filteredH4 =  filterImage(arrayF32_noisyCameraman, filter_H4)
 
-arrayF32_noisyCameraman_filteredH5 = signal.convolve2d(arrayF32_noisyCameraman, 
-                                                  filter_H5, 
-                                                  mode='full', # perform full 2D discrete convolution 
-                                                  boundary='fill', fillvalue=0) # pad by 0  
-arrayU8_noisyCameraman_filteredH5 = np.asarray(arrayF32_noisyCameraman_filteredH5, dtype=np.uint8)
-image_noisyCameraman_filteredH5 = Image.fromarray(arrayU8_noisyCameraman_filteredH5).convert('L')
+image_noisyCameraman_filteredH5, arrayF32_noisyCameraman_filteredH5 =  filterImage(arrayF32_noisyCameraman, filter_H5)
 
 # Display filtered images: noisy cameraman images
 plt.imshow(image_noisyCameraman_filteredH3, cmap='gray')
@@ -148,3 +149,7 @@ plt.title('Filtered image: noisyCameraman filtered by h_5.')
 plt.imsave(str(imageRootPath + fileSep + 'image_noisyCameraman_filteredH5.jpg'), image_noisyCameraman, cmap='gray')
 plt.show()
 
+## Q4 - Apply Median filtering
+
+
+## Q5 - Apply some filters
