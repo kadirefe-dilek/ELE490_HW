@@ -124,17 +124,20 @@ img_Cameraman_filteredH5, arrF32_Cameraman_filteredH5 = filterImage(
 
 # Display filtered images: cameraman images
 plt.imshow(img_Cameraman_filteredH3, cmap='gray')
+plt.imshow(img_Cameraman_filteredH3, cmap='gray')
 plt.axis('off')
 plt.title('Filtered image: Cameraman filtered by h_3.')
 plt.imsave(str(imageRootPath + fileSep + 'img_Cameraman_filteredH3.jpg'), img_Cameraman_filteredH3, cmap='gray')
 plt.show()
 
 plt.imshow(img_Cameraman_filteredH4, cmap='gray')
+plt.imshow(img_Cameraman_filteredH4, cmap='gray')
 plt.axis('off')
 plt.title('Filtered image: Cameraman filtered by h_4.')
 plt.imsave(str(imageRootPath + fileSep + 'img_Cameraman_filteredH4.jpg'), img_Cameraman_filteredH4, cmap='gray')
 plt.show()
 
+plt.imshow(img_Cameraman_filteredH5, cmap='gray')
 plt.imshow(img_Cameraman_filteredH5, cmap='gray')
 plt.axis('off')
 plt.title('Filtered image: Cameraman filtered by h_5.')
@@ -155,6 +158,7 @@ plt.title('Filtered image: noisyCameraman filtered by h_3.')
 plt.imsave(str(imageRootPath + fileSep + 'img_noisyCameraman_filteredH3.jpg'), img_noisyCameraman_filteredH3, cmap='gray')
 plt.show()
 
+plt.imshow(img_noisyCameraman_filteredH4, cmap='gray')
 plt.imshow(img_noisyCameraman_filteredH4, cmap='gray')
 plt.axis('off')
 plt.title('Filtered image: noisyCameraman filtered by h_4.')
