@@ -13,6 +13,13 @@ import warnings
 
 
 '''
+Performs scaling to [0-255] in uint8 for image display.
+    in:
+        originalArray: Input array (numpy.ndarray) that is to be scaled.
+    out:
+        fullGray: Output array which is the scaled version of the input array in uint8.
+
+    *Runtime warnings due to division by zero occures when the input image is uniform. To Prevent any warning due to division by zero, warnings module is used to raise "RuntimeWarning" type warnings as errors which is tolerated in except case by assigning a zeros array to the "fullGray".
 '''
 def getFullGrayScale(originalArray:np.ndarray):
     with warnings.catch_warnings():
@@ -30,8 +37,13 @@ def getFullGrayScale(originalArray:np.ndarray):
 
 
 '''
+Function to calculate Fc[p,q] (DFT signal)) from the given f[n,m] (space signal)
+    in:
+        f_nm: Input numpy array (assumed to be 2d) to operate on.
+    out:
+        fc_pq: Fourier domain signal in 2D found by taking an fft after necessary manipulations are done on f_nm.
 '''
-def calculateFc_pq(f_nm):
+def calculateFc_pq(f_nm:np.ndarray):
     fc_pq = np.zeros(f_nm.shape)
     for n in range(f_nm.shape[0]):
         for m in range(f_nm.shape[1]):
@@ -43,10 +55,15 @@ def calculateFc_pq(f_nm):
 
 
 '''
+Function that generates an edge image of size 512x512 for the given angle theta.
+    in:
+        theta: (Assumed to be in radians) Angle that defines the edge. 
+    out:
+        edgeImage: Output numpy array of size 512x512 with an edge of angle theta (in radians). 
 '''
 def generateEdgeImage(theta):
-    # Create a full white image
-    Edge_image = np.ones((512, 512)) * 255
+    # Create a full white image. 512 can be replaced by an argument 'size'
+    edgeImage = np.ones((512, 512)) * 255 
     # Calculate the necessary parameters
     tan_theta = math.tan(theta)
     center_x = 512 // 2
@@ -63,17 +80,17 @@ def generateEdgeImage(theta):
             if theta == 0:
                 # If theta=0, then fill the below half
                 if y > 512 // 2:
-                    Edge_image[y, x] = 0 
+                    edgeImage[y, x] = 0 
             elif theta == math.pi / 2:
                 # If theta=pi/2, then fill the left half
                 if x < 512 // 2:
-                    Edge_image[y, x] = 0 
+                    edgeImage[y, x] = 0 
             else:
                 # For different theta, fill below the edge
                 if rel_y > rel_x * tan_theta:
-                    Edge_image[y, x] = 0 
+                    edgeImage[y, x] = 0 
     
-    return Edge_image
+    return edgeImage
 
 
 
