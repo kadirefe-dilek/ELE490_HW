@@ -45,18 +45,34 @@ def createLowPassFilter(sigma,size=256):
 
     return g_L
 
+
+
+'''
+'''
+def createChirpSignal(size=256):
+    phi_nm = np.zeros((size,size))
+    for m in range(size):
+        for n in range(size):
+            phi_nm[n,m] = np.pi*((n-128)**2 + (m-128)**2) / size
+
+    t_nm = np.cos(phi_nm.copy())
+
+    return phi_nm, t_nm
+
+
+
 ## Definitions for reading and saving images
 # Define path and name to read the image
 fileSep = "\\"
 imageRootPath = gcd() 
 imageRootPath = imageRootPath + fileSep + "images"
 
-
+'''
 ## Q1 - Create g_L[u,v] and g_H[u,v] in fft domain
 sigmas = np.array([1, 10, 50, 100])
 
 
-for i,sigma in enumerate(sigmas):
+for sigma in sigmas:
     g_L = createLowPassFilter(sigma)
     g_H = np.ones(np.shape(g_L))-g_L
 
@@ -75,5 +91,34 @@ for i,sigma in enumerate(sigmas):
     plt.title(f"g_H[u,v], sigma={sigma}")
     plt.imsave(str(imageRootPath + fileSep + "img_gH_sigma_" + str(sigma) + ".jpg"), img_g_H, cmap="gray")
     plt.show()
+'''
 
-g_H = np.zeros((256,256,4))
+## Q2 - Create a test signal and display it 
+ks = np.array(range(9))
+rs = 16*ks
+
+phi_nm, chirp_nm = createChirpSignal(size=256)
+
+img_chirp = getFullGrayScale(chirp_nm)
+# Display
+plt.imshow(img_chirp, cmap="gray")
+plt.axis("off")
+plt.title(f"chirp[n,m]")
+plt.imsave(str(imageRootPath + fileSep + "img_chirp" + ".jpg"), img_chirp, cmap="gray")
+plt.show()
+
+img_phi = getFullGrayScale(phi_nm)
+# Display
+plt.imshow(img_phi, cmap="gray")
+plt.axis("off")
+plt.title(f"phi[n,m]")
+plt.imsave(str(imageRootPath + fileSep + "img_phi" + ".jpg"), img_phi, cmap="gray")
+plt.show()
+
+# phi is created centered at an imaginary (127.5,127.5) index
+phi_r = np.array(phi_nm[range(127,256), range(127,256)]) 
+
+phi_deriv_r = np.gradient(phi_r)
+print(np.shape(phi_deriv_r))
+for r in rs:
+    print(f"d/dr at r = {r}: {phi_deriv_r[r]:.3f}")
