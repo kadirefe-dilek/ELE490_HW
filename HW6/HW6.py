@@ -100,7 +100,7 @@ c_hat = np.zeros((N,M,sigmaVals.shape[0]))
 kernel_size = 8
 # sigma value is fed as its original value
 for i,sigma in enumerate(sigmaVals):
-    c_hat[:,:,i] = scaleImage(wiener(Nc[:,:,i]*255, (kernel_size,kernel_size)))
+    c_hat[:,:,i] = scaleImage(wiener(Nc[:,:,i], mysize=(kernel_size,kernel_size), noise=sigma))*255
     # Display the noisy image
     plt.figure()
     plt.title(f"Denoised Image (Noise power:sigma={sigma} Estimate:sigma={sigma})")
@@ -112,8 +112,10 @@ for i,sigma in enumerate(sigmaVals):
 
 '''
 # sigma value is calculated by wiener() function itself 
+# The calculation is performed such that the estimated noise power is the 
+# average local variance across all windows.
 for i,sigma in enumerate(sigmaVals):
-    c_hat[:,:,i] = wiener(Nc[:,:,i]*255, (kernel_size,kernel_size))
+    c_hat[:,:,i] = wiener(Nc[:,:,i], (kernel_size,kernel_size))
     # Display the noisy image
     plt.figure()
     plt.title(f"Denoised Image (Noise power:sigma={sigma} Estimate:sigma=auto)")
