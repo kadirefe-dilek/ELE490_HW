@@ -34,7 +34,8 @@ Generates zero-mean Gaussian random noise for a given image dimension.
 """
 def generateGaussianNoise(dimensions, sigma):
     N, M = dimensions
-    noise = np.random.normal(loc=0, scale=sigma, size=(N, M))  # Zero-mean Gaussian noise
+    # Zero-mean Gaussian noise
+    noise = np.random.normal(loc=0, scale=sigma, size=(N, M)) 
     return noise
 
 ## Definitions and reading the image
@@ -72,10 +73,10 @@ arr_gaussianNoise = generateGaussianNoise(imgDimensions, sigma_test)
 # Display the generated noise
 plt.figure()
 plt.title(f"Gaussian Random Noise (sigma={sigma_test})")
+plt.axis('off')
 plt.imshow(arr_gaussianNoise, cmap='gray')
 plt.colorbar(label="Noise Intensity")
 plt.savefig(str(imageRootPath + fileSep + 'fig_GaussianNoise_sigma_' + str(int(sigma_test)) + '.jpg'))
-plt.axis('off')
 plt.show()
 
 # Create an array for different sigma values
@@ -88,6 +89,7 @@ for i,sigma in enumerate(sigmaVals):
     # Display the noisy image
     plt.figure()
     plt.title(f"Image With Gaussian Random Noise (sigma={sigma})")
+    plt.axis("off")
     plt.imshow(img_Nc, cmap='gray')
     # plt.colorbar(label="Noise Intensity")
     plt.savefig(str(imageRootPath + fileSep + 'fig_noisyCameraman_sigma_' + str(int(sigma*1000)) + 'xE-3.jpg'))
@@ -97,31 +99,19 @@ for i,sigma in enumerate(sigmaVals):
 ## Q3 - Apply adaptive wiener filtering and observe the effect of different
 ## kernel sizes and sigma estimates.
 c_hat = np.zeros((N,M,sigmaVals.shape[0]))
-kernel_size = 8
-# sigma value is fed as its original value
-for i,sigma in enumerate(sigmaVals):
-    c_hat[:,:,i] = scaleImage(wiener(Nc[:,:,i], mysize=(kernel_size,kernel_size), noise=sigma))*255
-    # Display the noisy image
-    plt.figure()
-    plt.title(f"Denoised Image (Noise power:sigma={sigma} Estimate:sigma={sigma})")
-    plt.imshow(c_hat[:,:,i], cmap='gray')
-    # plt.colorbar(label="Noise Intensity")
-    plt.savefig(str(imageRootPath + fileSep + f"fig_estimateCameraman_noise-sigma_{int(sigma*1000)}xE-3_estimate-sigma_{int(sigma*1000)}xE-3_kernel_{kernel_size}x{kernel_size}" + '.jpg'))
-    plt.axis('off')
-    plt.show()
+kernel_size = 32
+# Loop through 
+for i,sigma_noise in enumerate(sigmaVals):
+    for sigma_filter in sigmaVals:
+        c_hat[:,:,i] = scaleImage(wiener(Nc[:,:,i], mysize=(kernel_size,kernel_size), noise=sigma_filter**2))*255
+        # Display the noisy image
+        plt.figure()
+        plt.title(f"Denoised Image (Noise power:sigma={sigma_noise} Estimate:sigma={sigma_filter})")
+        plt.axis("off")
+        plt.imshow(c_hat[:,:,i], cmap='gray')
+        # plt.colorbar(label="Noise Intensity")
+        plt.savefig(str(imageRootPath + fileSep + f"fig_estimateCameraman_noise-sigma_{int(sigma_noise*1000)}xE-3_estimate-sigma_{int(sigma_filter*1000)}xE-3_kernel_{kernel_size}x{kernel_size}" + '.jpg'))
+        plt.axis('off')
+        plt.show()
 
-'''
-# sigma value is calculated by wiener() function itself 
-# The calculation is performed such that the estimated noise power is the 
-# average local variance across all windows.
-for i,sigma in enumerate(sigmaVals):
-    c_hat[:,:,i] = wiener(Nc[:,:,i], (kernel_size,kernel_size))
-    # Display the noisy image
-    plt.figure()
-    plt.title(f"Denoised Image (Noise power:sigma={sigma} Estimate:sigma=auto)")
-    plt.imshow(c_hat[:,:,i], cmap='gray')
-    # plt.colorbar(label="Noise Intensity")
-    plt.savefig(str(imageRootPath + fileSep + f"fig_estimateCameraman_noise-sigma_{int(sigma*1000)}xE-3_estimate-sigma_auto_kernel_{kernel_size}x{kernel_size}" + '.jpg'))
-    plt.axis('off')
-    plt.show()
-'''
+
